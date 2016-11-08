@@ -1,5 +1,5 @@
 <html>
-
+<title>HTML 5 Pong Game</title>
 
 <canvas id="gameCanvas" width="800" height="600"></canvas>
 <script>
@@ -85,9 +85,9 @@ function ballReset() {
 
 function computerMovement() {
 	var paddle2YCenter = paddle2Y + (PADDLE_HEIGHT/2);
-	if(paddle2YCenter < ballY-35) {
+	if(paddle2YCenter < ballY-35) { //stop paddle 2's excessive jittering
 		paddle2Y += 6;
-	} else if(paddle2YCenter > ballY+35) {
+	} else if(paddle2YCenter > ballY+35) { //stop paddle 2's excessive jittering
 		paddle2Y -= 6;
 	}
 }
@@ -104,7 +104,7 @@ function moveEverything() {
 	ballY = ballY + ballSpeedY; 
 	
 	//following lines; if ball reaches edge of canvas, ball will flip its direction
-	if(ballX > canvas.width) {
+	if(ballX > canvas.width - 25 - PADDLE_THICKNESS) { //20 = 15 margin + 10 ball diameter for proper collision
 		if(ballY > paddle2Y &&
 			ballY < paddle2Y+PADDLE_HEIGHT) {
 				ballSpeedX = -ballSpeedX; //reflect the ball if touches paddle
@@ -112,22 +112,22 @@ function moveEverything() {
 				var deltaY = ballY-(paddle2Y+PADDLE_HEIGHT/2);
 				
 				ballSpeedY = deltaY * 0.35;
-			} else {
+			} else if (ballX > canvas.width) {
 				player1Score++; //must be BEFORE ballReset
 				ballReset();
 				
 			}
 	}
-	if(ballX < 0) {
+	if(ballX < 25 + PADDLE_THICKNESS) { //20 = 15 margin + 10 ball diameter for proper collision
 		if(ballY > paddle1Y &&
 			ballY < paddle1Y+PADDLE_HEIGHT) {
 				ballSpeedX = -ballSpeedX; //reflect the ball if touches paddle
 				
 				var deltaY = ballY-(paddle1Y+PADDLE_HEIGHT/2);
 				
-				ballSpeedY = deltaY * 0.35;
+				ballSpeedY = deltaY * 0.35; //change vertical speed
 				
-			} else {
+			} else if (ballX < 0){
 				player2Score++; //must be BEFORE ballReset
 				ballReset();
 				
@@ -149,8 +149,8 @@ function drawEverything() {
 
 	//console log proves function was called
 	console.log(ballX);
-	//next line blanks out screen w/ black
-	colorRect(0,0,canvas.width,canvas.height, 'black');
+	//next line creates green bg for court
+	colorRect(0,0,canvas.width,canvas.height, 'green');
 	
 	if(showingWinScreen){
 		canvasContext.fillStyle = 'white';
@@ -165,12 +165,15 @@ function drawEverything() {
 		return;
 	}
 	
+	//call function to draw net
 	drawNet();
 	
+	
+	//following: moving components
 	//next line = left player paddle
-	colorRect(0,paddle1Y,PADDLE_THICKNESS,PADDLE_HEIGHT, 'white');
+	colorRect(15,paddle1Y,PADDLE_THICKNESS,PADDLE_HEIGHT, 'white');
 	//next line = right player paddle
-	colorRect(canvas.width-PADDLE_THICKNESS,paddle2Y,PADDLE_THICKNESS,PADDLE_HEIGHT, 'white');
+	colorRect(canvas.width-PADDLE_THICKNESS-15,paddle2Y,PADDLE_THICKNESS,PADDLE_HEIGHT, 'white');
 	//next line draws the ball
 	colorCircle(ballX, ballY, 10, 'white');
 	
